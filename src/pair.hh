@@ -2,6 +2,14 @@
 
 #include "compare.hh"
 
+#ifdef COMPARE_USE_STD
+#define COMMON_COMPARE_T std::common_comparison_category_t
+#define DECLVAL std::declval
+#else
+#define COMMON_COMPARE_T common_comparison_t
+#define DECLVAL declval
+#endif
+
 namespace mc
 {
 	template <typename T1, typename T2>
@@ -13,8 +21,8 @@ namespace mc
 		template <typename U1, typename U2>
 		bool operator==(pair<U1, U2> const& other) const;
 		template <typename U1, typename U2>
-		common_comparison_t<decltype(declval<T1>() <=> declval<U1>()),
-		                    decltype(declval<T2>() <=> declval<U2>())>
+		COMMON_COMPARE_T<decltype(DECLVAL<T1>() <=> DECLVAL<U1>()),
+		                 decltype(DECLVAL<T2>() <=> DECLVAL<U2>())>
 		operator<=>(pair<U1, U2> const& other) const;
 	};
 }
@@ -30,8 +38,8 @@ namespace mc
 
 	template <typename T1, typename T2>
 	template <typename U1, typename U2>
-	common_comparison_t<decltype(declval<T1>() <=> declval<U1>()),
-	                    decltype(declval<T2>() <=> declval<U2>())>
+	COMMON_COMPARE_T<decltype(DECLVAL<T1>() <=> DECLVAL<U1>()),
+	                 decltype(DECLVAL<T2>() <=> DECLVAL<U2>())>
 	pair<T1, T2>::operator<=>(pair<U1, U2> const& other) const
 	{
 		auto res = first <=> other.first;

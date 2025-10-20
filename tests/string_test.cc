@@ -752,8 +752,8 @@ GROUP(string)
 		{
 			mc::string str0(9, 'a');
 			CHECK_EQ(str0.size(), 9)
-			str0.replace(5, 5, mc::string("Hello World!"), 6);
-			CHECK_EQ(str0.size(), 10)
+			str0.replace(5, 4, mc::string("Hello World!"), 6);
+			CHECK_EQ(str0.size(), 11)
 			for (uint32_t i = 0; i < str0.size(); ++i)
 				if (i < 5)
 					CHECK_EQ(str0[i], 'a')
@@ -795,8 +795,8 @@ GROUP(string)
 		{
 			mc::string str0(9, 'a');
 			CHECK_EQ(str0.size(), 9)
-			str0.replace(5, 5, mc::string_view("Hello World!"), 6);
-			CHECK_EQ(str0.size(), 10)
+			str0.replace(5, 4, mc::string_view("Hello World!"), 6);
+			CHECK_EQ(str0.size(), 11)
 			for (uint32_t i = 0; i < str0.size(); ++i)
 				if (i < 5)
 					CHECK_EQ(str0[i], 'a')

@@ -1265,6 +1265,8 @@ namespace mc
 
 	void string::replace(uint32_t idx, uint32_t count, uint32_t count2, char c)
 	{
+		count = SIZE(*this) - idx < count ? SIZE(*this) - idx : count;
+
 		if (count == 0)
 		{
 			insert(idx, count2, c);
@@ -1333,9 +1335,11 @@ namespace mc
 
 	void string::replace(uint32_t idx, uint32_t count, char const* str, uint32_t count2)
 	{
-		if (idx == len_)
+		count = SIZE(*this) - idx < count ? SIZE(*this) - idx : count;
+
+		if (count == 0)
 		{
-			append(str, count2);
+			insert(idx, str, count2);
 		}
 		else
 		{
@@ -1405,9 +1409,11 @@ namespace mc
 	void string::replace(uint32_t idx, uint32_t count, string const& str, uint32_t pos,
 	                     uint32_t count2)
 	{
-		if (idx == len_)
+		count = SIZE(*this) - idx < count ? SIZE(*this) - idx : count;
+
+		if (count == 0)
 		{
-			append(str, pos, count2);
+			insert(idx, str, pos, count2);
 		}
 		else
 		{
@@ -1477,9 +1483,11 @@ namespace mc
 	void string::replace(uint32_t idx, uint32_t count, string_view const& str,
 	                     uint32_t pos, uint32_t count2)
 	{
-		if (idx == len_)
+		count = SIZE(*this) - idx < count ? SIZE(*this) - idx : count;
+
+		if (count == 0)
 		{
-			append(str, pos, count2);
+			insert(idx, str, pos, count2);
 		}
 		else
 		{
@@ -1548,9 +1556,11 @@ namespace mc
 
 	void string::replace(uint32_t idx, uint32_t count, std::initializer_list<char> ilist)
 	{
-		if (idx == len_)
+		count = SIZE(*this) - idx < count ? SIZE(*this) - idx : count;
+
+		if (count == 0)
 		{
-			append(ilist);
+			insert(idx, ilist);
 		}
 		else
 		{
@@ -1616,10 +1626,15 @@ namespace mc
 
 	void string::erase(uint32_t idx, uint32_t count)
 	{
-		memmove(DATA(*this) + idx, DATA(*this) + idx + count,
-		        SIZE(*this) - idx - count + 1);
+		count = SIZE(*this) - idx < count ? SIZE(*this) - idx : count;
 
-		len_ = SIZE(*this) - count | (len_ & is_large_flag);
+		if (count)
+		{
+			memmove(DATA(*this) + idx, DATA(*this) + idx + count,
+			        SIZE(*this) - idx - count + 1);
+
+			len_ = SIZE(*this) - count | (len_ & is_large_flag);
+		}
 	}
 
 	void string::push_back(char c)
@@ -1859,77 +1874,115 @@ namespace mc
 
 	uint32_t string::find(string const& str, uint32_t pos) const
 	{
-		if (SIZE(str) > SIZE(*this) - pos || SIZE(str) == 0)
+		char const* data {DATA(*this)};
+		uint32_t    size {SIZE(*this)};
+
+		char const* data2 {DATA(str)};
+		uint32_t    len {SIZE(str)};
+
+		if (len > size - pos || len == 0)
 			return UINT32_MAX;
 
-		uint32_t match = 0;
-		for (uint32_t i {pos}, j {0}; i < SIZE(*this); ++i)
-		{
-			if (SIZE(*this) - i < SIZE(str) - j)
-				return UINT32_MAX;
+		uint32_t max_len {size - len + 1};
+		char     first_char {data2[0]};
 
-			if (DATA(*this)[i] == DATA(str)[j])
+		while (pos < max_len)
+		{
+			while ((data[pos] != first_char) && (pos < max_len))
+				++pos;
+
+			uint32_t j {1}, k {pos + 1};
+			while (data[k] == data2[j])
 			{
-				if (j == 0)
-					match = i;
 				++j;
-				if (j == SIZE(str))
-					return match;
+				++k;
+
+				if (k == pos + len)
+					return pos;
+
+				if (k == size)
+					return UINT32_MAX;
 			}
-			else
-				j = 0;
+
+			++pos;
 		}
+
 		return UINT32_MAX;
 	}
 
 	uint32_t string::find(string_view str, uint32_t pos) const
 	{
-		if (str.size() > SIZE(*this) - pos || str.size() == 0)
+		char const* data {DATA(*this)};
+		uint32_t    size {SIZE(*this)};
+
+		char const* data2 {str.data()};
+		uint32_t    len {str.size()};
+
+		if (len > size - pos || len == 0)
 			return UINT32_MAX;
 
-		uint32_t match = 0;
-		for (uint32_t i {pos}, j {0}; i < SIZE(*this); ++i)
-		{
-			if (SIZE(*this) - i < str.size() - j)
-				return UINT32_MAX;
+		uint32_t max_len {size - len + 1};
+		char     first_char {data2[0]};
 
-			if (DATA(*this)[i] == str.data()[j])
+		while (pos < max_len)
+		{
+			while ((data[pos] != first_char) && (pos < max_len))
+				++pos;
+
+			uint32_t j {1}, k {pos + 1};
+			while (data[k] == data2[j])
 			{
-				if (j == 0)
-					match = i;
 				++j;
-				if (j == str.size())
-					return match;
+				++k;
+
+				if (k == pos + len)
+					return pos;
+
+				if (k == size)
+					return UINT32_MAX;
 			}
-			else
-				j = 0;
+
+			++pos;
 		}
+
 		return UINT32_MAX;
 	}
 
 	uint32_t string::find(char const* str, uint32_t pos) const
 	{
-		uint32_t len = strlen(str);
-		if (len > SIZE(*this) - pos || len == 0)
+		char const* data {DATA(*this)};
+		uint32_t    size {SIZE(*this)};
+
+		char const* data2 {str};
+		uint32_t    len {static_cast<uint32_t>(strlen(str))};
+
+		if (len > size - pos || len == 0)
 			return UINT32_MAX;
 
-		uint32_t match = 0;
-		for (uint32_t i {pos}, j {0}; i < SIZE(*this); ++i)
-		{
-			if (SIZE(*this) - i < len - j)
-				return UINT32_MAX;
+		uint32_t max_len {size - len + 1};
+		char     first_char {data2[0]};
 
-			if (DATA(*this)[i] == str[j])
+		while (pos < max_len)
+		{
+			while ((data[pos] != first_char) && (pos < max_len))
+				++pos;
+
+			uint32_t j {1}, k {pos + 1};
+			while (data[k] == data2[j])
 			{
-				if (j == 0)
-					match = i;
 				++j;
-				if (j == len)
-					return match;
+				++k;
+
+				if (k == pos + len)
+					return pos;
+
+				if (k == size)
+					return UINT32_MAX;
 			}
-			else
-				j = 0;
+
+			++pos;
 		}
+
 		return UINT32_MAX;
 	}
 
@@ -1943,76 +1996,126 @@ namespace mc
 
 	uint32_t string::rfind(string const& str, uint32_t pos) const
 	{
-		if (pos == UINT32_MAX)
-			pos = SIZE(*this) - 1;
+		char const* data {DATA(*this)};
+		uint32_t    size {SIZE(*this)};
 
-		if (SIZE(str) > pos || SIZE(str) == 0)
+		char const* data2 {DATA(str)};
+		uint32_t    len {SIZE(str)};
+
+		if (pos == UINT32_MAX)
+			pos = size;
+
+		if (len + 1 > pos || len == 0)
 			return UINT32_MAX;
 
-		for (uint32_t i {pos + 1}, j {SIZE(str)}; i > 0; --i)
+		char first_char {data2[len - 1]};
+
+		while (pos > 0)
 		{
-			if (i < j)
+			while ((pos > 0) && (data[pos - 1] != first_char))
+				--pos;
+
+			if (pos == 0)
 				return UINT32_MAX;
 
-			if (DATA(*this)[i - 1] == DATA(str)[j - 1])
+			uint32_t j {len - 1}, k {pos - 1};
+			while (data[k - 1] == data2[j - 1])
 			{
 				--j;
-				if (j == 0)
-					return i - 1;
+				--k;
+
+				if (k == pos - len)
+					return k;
+
+				if (k == 0)
+					return UINT32_MAX;
 			}
-			else
-				j = SIZE(str);
+
+			--pos;
 		}
 		return UINT32_MAX;
 	}
 
 	uint32_t string::rfind(string_view str, uint32_t pos) const
 	{
-		if (pos == UINT32_MAX)
-			pos = SIZE(*this) - 1;
+		char const* data {DATA(*this)};
+		uint32_t    size {SIZE(*this)};
 
-		if (str.size() > pos || str.size() == 0)
+		char const* data2 {str.data()};
+		uint32_t    len {str.size()};
+
+		if (pos == UINT32_MAX)
+			pos = size;
+
+		if (len + 1 > pos || len == 0)
 			return UINT32_MAX;
 
-		for (uint32_t i {pos + 1}, j {str.size()}; i > 0; --i)
+		char first_char {data2[len - 1]};
+
+		while (pos > 0)
 		{
-			if (i < j)
+			while ((pos > 0) && (data[pos - 1] != first_char))
+				--pos;
+
+			if (pos == 0)
 				return UINT32_MAX;
 
-			if (DATA(*this)[i - 1] == str.data()[j - 1])
+			uint32_t j {len - 1}, k {pos - 1};
+			while (data[k - 1] == data2[j - 1])
 			{
 				--j;
-				if (j == 0)
-					return i - 1;
+				--k;
+
+				if (k == pos - len)
+					return k;
+
+				if (k == 0)
+					return UINT32_MAX;
 			}
-			else
-				j = str.size();
+
+			--pos;
 		}
 		return UINT32_MAX;
 	}
 
 	uint32_t string::rfind(char const* str, uint32_t pos) const
 	{
-		uint32_t len = strlen(str);
-		if (pos == UINT32_MAX)
-			pos = SIZE(*this) - 1;
+		char const* data {DATA(*this)};
+		uint32_t    size {SIZE(*this)};
 
-		if (len > pos || len == 0)
+		char const* data2 {str};
+		uint32_t    len {static_cast<uint32_t>(strlen(str))};
+
+		if (pos == UINT32_MAX)
+			pos = size;
+
+		if (len + 1 > pos || len == 0)
 			return UINT32_MAX;
 
-		for (uint32_t i {pos + 1}, j {len}; i > 0; --i)
+		char first_char {data2[len - 1]};
+
+		while (pos > 0)
 		{
-			if (i < j)
+			while ((pos > 0) && (data[pos - 1] != first_char))
+				--pos;
+
+			if (pos == 0)
 				return UINT32_MAX;
 
-			if (DATA(*this)[i - 1] == str[j - 1])
+			uint32_t j {len - 1}, k {pos - 1};
+			while (data[k - 1] == data2[j - 1])
 			{
 				--j;
-				if (j == 0)
-					return i - 1;
+				--k;
+
+				if (k == pos - len)
+					return k;
+
+				if (k == 0)
+					return UINT32_MAX;
 			}
-			else
-				j = len;
+
+			--pos;
 		}
 		return UINT32_MAX;
 	}

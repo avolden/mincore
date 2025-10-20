@@ -48,7 +48,7 @@ inline void* operator new[]([[maybe_unused]] size_t count, void* ptr) noexcept
 }
 #endif
 #else
-extern void* operator new(size_t count, void* ptr);
-extern void* operator new[](size_t count, void* ptr);
+extern void* operator new(size_t count, void* ptr) noexcept;
+extern void* operator new[](size_t count, void* ptr) noexcept;
 #endif
 #endif

@@ -345,4 +345,35 @@ GROUP(vector)
 		CHECK_EQ(pos1, 1)
 		CHECK_EQ(vec1[pos1].val_, 3)
 	}
+
+	TEST(swap_pop_back)
+	{
+		mc::vector<int32_t> vec0 {0, 1, 2, 3, 4};
+		CHECK_EQ(vec0.size(), 5)
+		CHECK_EQ(vec0.capacity(), 5)
+
+		vec0.swap_pop_back(2);
+		CHECK_EQ(vec0.size(), 4)
+		CHECK_EQ(vec0[2], 4)
+
+		vec0.swap_pop_back(3);
+		CHECK_EQ(vec0.size(), 3)
+		CHECK_EQ(vec0[2], 4)
+
+		mc::vector<vec_test_move> vec1;
+		vec1.emplace_back(0);
+		vec1.emplace_back(1);
+		vec1.emplace_back(2);
+		vec1.emplace_back(3);
+		vec1.emplace_back(4);
+		CHECK_EQ(vec1.size(), 5)
+
+		vec1.swap_pop_back(2);
+		CHECK_EQ(vec1.size(), 4)
+		CHECK_EQ(vec1[2].val_, 4)
+
+		vec1.swap_pop_back(3);
+		CHECK_EQ(vec1.size(), 3)
+		CHECK_EQ(vec1[2].val_, 4)
+	}
 }

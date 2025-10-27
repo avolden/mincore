@@ -80,6 +80,8 @@ namespace mc
 
 		uint32_t erase(uint32_t idx, uint32_t count = 1)
 			requires move_assignable<T>;
+		void swap_pop_back(uint32_t idx)
+			requires move_assignable<T>;
 
 		// Delete const rvalue version of these functions, to prevent implicit conversion
 		// from rvalue to const lvalue
@@ -746,6 +748,15 @@ namespace mc
 
 		size_ -= count;
 		return idx;
+	}
+
+	template <vector_type T>
+	void vector<T>::swap_pop_back(uint32_t idx)
+		requires move_assignable<T>
+	{
+		if (idx != size_ - 1)
+			arr_[idx] = static_cast<T&&>(arr_[size_ - 1]);
+		pop_back();
 	}
 
 	template <vector_type T>

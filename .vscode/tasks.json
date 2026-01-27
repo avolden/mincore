@@ -48,6 +48,22 @@
 				"showReuseMessage": true,
 				"clear": false
 			}
+		},
+		{
+			"label": "generate lcov (mac)",
+			"type": "shell",
+			"command":[
+				"xcrun llvm-profdata merge -sparse build/bin/default.profraw -o build/bin/default.profdata &&",
+				"xcrun llvm-cov export --format=lcov --instr-profile build/bin/default.profdata build/bin/tests > build/bin/lcov.info "
+			],
+			"presentation": {
+				"echo": true,
+				"reveal": "silent",
+				"focus": false,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false
+			}
 		}
 	]
 }

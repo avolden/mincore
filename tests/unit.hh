@@ -1,5 +1,6 @@
 #pragma once
 
+#include <inttypes.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
@@ -172,7 +173,7 @@ bool print_value(char* buf, char const* val_str, T const& val)
 	}
 	else if constexpr (is_same_v<T, int64_t>)
 	{
-		snprintf(buf, 64, "%ji", val);
+		snprintf(buf, 64, "%" PRIi64, val);
 		return strcmp(buf, val_str) != 0;
 	}
 	else if constexpr (is_same_v<T, uint8_t> || is_same_v<T, uint16_t> ||
@@ -183,7 +184,7 @@ bool print_value(char* buf, char const* val_str, T const& val)
 	}
 	else if constexpr (is_same_v<T, uint64_t>)
 	{
-		snprintf(buf, 64, "%ju", val);
+		snprintf(buf, 64, "%" PRIu64, val);
 		return strcmp(buf, val_str) != 0;
 	}
 	else if constexpr (is_same_v<T, float> || is_same_v<T, double>)

@@ -50,7 +50,17 @@
 			"console": "integratedTerminal",
 			"preLaunchTask": "build",
 			"postDebugTask": "generate lcov (linux)"
+		},
+		{
+			"name": "mincore tests (lldb mac)",
+			"type": "lldb",
+			"request": "launch",
+			"program": "${workspaceFolder}/build/bin/tests",
+			"args": [],
+			"cwd": "${workspaceFolder}/build/bin",
+			"console": "integratedTerminal",
+			"preLaunchTask": "build",
+			"postDebugTask": "generate lcov (mac)"
 		}
-
 	]
 }

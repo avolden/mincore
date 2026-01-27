@@ -5,6 +5,7 @@
 #ifdef INITIALIZER_LIST_USE_STD
 #include <initializer_list>
 #else
+#include <stddef.h>
 #include <stdint.h>
 
 namespace std
@@ -23,7 +24,7 @@ namespace std
 		initializer_list(T const* arr, uint64_t size);
 
 		T const* arr_ {nullptr};
-		uint64_t size_ {0};
+		size_t   size_ {0};
 	};
 }
 

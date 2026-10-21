@@ -114,7 +114,7 @@ GROUP(string)
 		str1.reserve(18);
 		CHECK_EQ(str1.capacity(), 18)
 
-		str1 = "This is a very long string containing the sequence Hello World!";
+		str1.append("This is a very long string containing the sequence Hello World!");
 		CHECK_EQ(str1.size(), 63)
 		CHECK_EQ(str1.capacity(), 72)
 
@@ -188,7 +188,7 @@ GROUP(string)
 
 		str1 = str0;
 		CHECK_EQ(str1.size(), 29)
-		CHECK_EQ(str1.capacity(), 42)
+		CHECK_EQ(str1.capacity(), 29)
 		CHECK_EQ(strcmp(str1.data(), "This is a longer Hello World!"), 0)
 
 		mc::string str2;
@@ -200,7 +200,7 @@ GROUP(string)
 
 		str2 = static_cast<mc::string&&>(str1);
 		CHECK_EQ(str2.size(), 29)
-		CHECK_EQ(str2.capacity(), 42)
+		CHECK_EQ(str2.capacity(), 29)
 		CHECK_EQ(strcmp(str2.data(), "This is a longer Hello World!"), 0)
 		CHECK_EQ(str1.size(), 0); // NOLINT(clang-analyzer-cplusplus.Move
 
@@ -978,6 +978,9 @@ GROUP(string)
 	{
 		mc::string str0("Hello World!");
 
+		bool res2 = str0.starts_with('H');
+		CHECK_EQ(res2, true);
+
 		bool res0 = str0.starts_with("Hello");
 		CHECK_EQ(res0, true);
 
@@ -987,6 +990,9 @@ GROUP(string)
 		res0 = str0.starts_with(mc::string_view("Hello"));
 		CHECK_EQ(res0, true);
 
+		bool res3 = str0.starts_with('W');
+		CHECK_EQ(res3, false);
+
 		bool res1 = str0.starts_with("World!");
 		CHECK_EQ(res1, false);
 
@@ -995,17 +1001,14 @@ GROUP(string)
 
 		res1 = str0.starts_with(mc::string_view("World!"));
 		CHECK_EQ(res1, false);
-
-		bool res2 = str0.starts_with('H');
-		CHECK_EQ(res2, true);
-
-		bool res3 = str0.starts_with('W');
-		CHECK_EQ(res3, false);
 	}
 
 	TEST(ends_with)
 	{
 		mc::string str0("Hello World!");
+
+		bool res2 = str0.ends_with('o');
+		CHECK_EQ(res2, false);
 
 		bool res0 = str0.ends_with("Hello");
 		CHECK_EQ(res0, false);
@@ -1025,9 +1028,6 @@ GROUP(string)
 		res1 = str0.ends_with(mc::string_view("World!"));
 		CHECK_EQ(res1, true);
 
-		bool res2 = str0.ends_with('o');
-		CHECK_EQ(res2, false);
-
 		bool res3 = str0.ends_with('!');
 		CHECK_EQ(res3, true);
 	}
@@ -1035,6 +1035,9 @@ GROUP(string)
 	TEST(contains)
 	{
 		mc::string str0("Hello World!");
+
+		bool res3 = str0.contains('H');
+		CHECK_EQ(res3, true);
 
 		bool res0 = str0.contains("Hello");
 		CHECK_EQ(res0, true);
@@ -1044,6 +1047,9 @@ GROUP(string)
 
 		res0 = str0.contains(mc::string_view("Hello"));
 		CHECK_EQ(res0, true);
+
+		bool res4 = str0.contains('W');
+		CHECK_EQ(res4, true);
 
 		bool res1 = str0.contains("World!");
 		CHECK_EQ(res1, true);
@@ -1062,12 +1068,6 @@ GROUP(string)
 
 		res2 = str0.contains(mc::string_view("World !"));
 		CHECK_EQ(res2, false);
-
-		bool res3 = str0.contains('H');
-		CHECK_EQ(res3, true);
-
-		bool res4 = str0.contains('W');
-		CHECK_EQ(res4, true);
 
 		bool res5 = str0.contains('Z');
 		CHECK_EQ(res5, false);

@@ -75,6 +75,7 @@ namespace mc
 		            uint32_t count = UINT32_MAX);
 		void append(std::initializer_list<char> ilist);
 
+		string& operator+=(char c);
 		string& operator+=(char const* str);
 		string& operator+=(string_view str);
 		string& operator+=(string const& str);
@@ -98,52 +99,58 @@ namespace mc
 		string substr(uint32_t pos, uint32_t size = UINT32_MAX) const&;
 		string substr(uint32_t pos, uint32_t size = UINT32_MAX) &&;
 
+		int32_t compare(char const* str, uint32_t count = UINT32_MAX) const;
 		int32_t compare(string const& str) const;
 		int32_t compare(string_view str) const;
-		int32_t compare(char const* str) const;
 
+		bool starts_with(char c, uint32_t count = 1) const;
+		bool starts_with(char const* str, uint32_t count = UINT32_MAX) const;
 		bool starts_with(string const& str) const;
 		bool starts_with(string_view str) const;
-		bool starts_with(char const* str) const;
-		bool starts_with(char c) const;
 
+		bool ends_with(char c, uint32_t count = 1) const;
+		bool ends_with(char const* str, uint32_t count = UINT32_MAX) const;
 		bool ends_with(string const& str) const;
 		bool ends_with(string_view str) const;
-		bool ends_with(char const* str) const;
-		bool ends_with(char c) const;
 
+		bool contains(char c, uint32_t count = 1) const;
+		bool contains(char const* str, uint32_t count = UINT32_MAX) const;
 		bool contains(string const& str) const;
 		bool contains(string_view str) const;
-		bool contains(char const* str) const;
-		bool contains(char c) const;
 
+		uint32_t find(char c, uint32_t pos = 0, uint32_t count = 1) const;
+		uint32_t find(char const* str, uint32_t pos = 0,
+		              uint32_t count = UINT32_MAX) const;
 		uint32_t find(string const& str, uint32_t pos = 0) const;
 		uint32_t find(string_view str, uint32_t pos = 0) const;
-		uint32_t find(char const* str, uint32_t pos = 0) const;
-		uint32_t find(char c, uint32_t pos = 0) const;
 
+		uint32_t rfind(char c, uint32_t pos = UINT32_MAX, uint32_t count = 1) const;
+		uint32_t rfind(char const* str, uint32_t pos = UINT32_MAX,
+		               uint32_t count = UINT32_MAX) const;
 		uint32_t rfind(string const& str, uint32_t pos = UINT32_MAX) const;
 		uint32_t rfind(string_view str, uint32_t pos = UINT32_MAX) const;
-		uint32_t rfind(char const* str, uint32_t pos = UINT32_MAX) const;
-		uint32_t rfind(char c, uint32_t pos = UINT32_MAX) const;
 
+		bool operator==(char const* str) const;
 		bool operator==(string const& str) const;
 		bool operator==(string_view str) const;
-		bool operator==(char const* str) const;
 
+		std::strong_ordering operator<=>(char const* str) const;
 		std::strong_ordering operator<=>(string const& str) const;
 		std::strong_ordering operator<=>(string_view str) const;
-		std::strong_ordering operator<=>(char const* str) const;
 
 		// Delete const rvalue version of these functions, to prevent implicit conversion
 		// from rvalue to const lvalue
 		char const* data() const&& = delete;
-		operator string_view() const&& = delete;
+					operator string_view() const&& = delete;
 		char const& operator[](uint32_t pos) const&& = delete;
 		char const& front() const&& = delete;
 		char const& back() const&& = delete;
 
 	private:
+		void realloc(uint32_t cap, bool precise);
+		void realloc_sparse(uint32_t cap, bool precise, uint32_t cut1_end,
+		                    uint32_t cut2_start, uint32_t cut2_pos);
+
 		static constexpr uint32_t small_size = STRING_SMALL_SIZE;
 		static constexpr uint32_t is_large_flag = 0x8000'0000;
 

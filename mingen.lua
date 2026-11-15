@@ -6,7 +6,7 @@ local mincore = mg.project({
 	name = "mincore",
 	type = mg.project_type.sources,
 	sources = {"src/**.cc"},
-	compile_options = {"-g", "-Wall", "-Wextra", "-nostdinc++", "--std=c++20"},
+	compile_options = {"-g", "-Wall", "-Wextra", "-nostdinc++", "--std=c++20", '-D"_MT"', '-D"_DLL"'},
 	debug_coverage = {
 		compile_options = {"-O0", "-fprofile-instr-generate", "-fcoverage-mapping"}
 	},
@@ -30,8 +30,8 @@ local tests_exe = mg.project({
 	type = mg.project_type.executable,
 	sources = {"tests/**.cc"},
 	includes = {"src"},
-	compile_options = {"-g", "-O0", "-Wall", "-Wextra", "-Werror", "-Wno-dangling-else", "-fno-char8_t", "-nostdinc++", "--std=c++20", "-D_CRT_SECURE_NO_WARNINGS", "-fprofile-instr-generate", "-fcoverage-mapping"},
-	link_options = {linker_type_arg, "-g", "-fprofile-instr-generate", "-fcoverage-mapping"},
+	compile_options = {"-g", "-O0", "-Wall", "-Wextra", "-Werror", "-Wno-dangling-else", "-fno-char8_t", "-nostdinc++", "--std=c++20", "-D_CRT_SECURE_NO_WARNINGS", "-fprofile-instr-generate", "-fcoverage-mapping", '-D"_MT"', '-D"_DLL"'},
+	link_options = {linker_type_arg, "-g", "-fprofile-instr-generate", "-fcoverage-mapping", '-Xlinker /nodefaultlib:libcmt.lib', '-Xlinker /defaultlib:msvcrt.lib'},
 	dependencies = {mincore}
 })
 

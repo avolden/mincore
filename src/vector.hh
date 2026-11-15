@@ -9,6 +9,12 @@
 
 namespace mc
 {
+	// There are multiple instance of !is_complete<T> requirements. This is to prevent
+	// vector creation being unusable when forward declaring a class, or declaring a
+	// vector of T inside T (parent/children relation). This breaks the requirements,
+	// because no capabilities are checked, but this is necessary to prevent always
+	// defining the class to use the vector.
+
 	template <typename T>
 	concept vector_type =
 		!is_complete<T> ||
@@ -86,7 +92,7 @@ namespace mc
 		// Delete const rvalue version of these functions, to prevent implicit conversion
 		// from rvalue to const lvalue
 		T const* data() const&& = delete;
-		operator array_view<T>() const&& = delete;
+				 operator array_view<T>() const&& = delete;
 		T const& operator[](uint32_t idx) const&& = delete;
 		T const& front() const&& = delete;
 		T const& back() const&& = delete;

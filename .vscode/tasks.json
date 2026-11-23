@@ -4,6 +4,12 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
+			"label": "generate",
+			"type": "shell",
+			"command": "mingen -c debug_coverage --compile-db",
+			"problemMatcher": []
+		},
+		{
 			"label": "build",
 			"type": "shell",
 			"command": "ninja -C build",

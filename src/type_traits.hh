@@ -2,6 +2,7 @@
 
 namespace mc
 {
+	// Conditional
 	template <bool Cond, typename True, typename False>
 	struct conditional
 	{
@@ -17,6 +18,7 @@ namespace mc
 	template <bool Cond, typename True, typename False>
 	using conditional_t = conditional<Cond, True, False>::type;
 
+	// Remove pointer
 	template <typename T>
 	struct remove_pointer
 	{
@@ -38,6 +40,7 @@ namespace mc
 	template <typename T>
 	using remove_pointer_t = remove_pointer<T>::type;
 
+	// Add (r/l)value
 	template <typename T>
 	struct add_lvalue
 	{
@@ -73,4 +76,59 @@ namespace mc
 	{
 		static_assert(false, "declval not allowed in an evaluated context");
 	}
+
+	// Remove reference
+	template <typename T>
+	struct remove_reference
+	{
+		using type = T;
+	};
+
+	template <typename T>
+	struct remove_reference<T&>
+	{
+		using type = T;
+	};
+
+	template <typename T>
+	struct remove_reference<T&&>
+	{
+		using type = T;
+	};
+
+	template <typename T>
+	using remove_reference_t = remove_reference<T>::type;
+
+	// Remove cv
+	template <typename T>
+	struct remove_cv
+	{
+		using type = T;
+	};
+
+	template <typename T>
+	struct remove_cv<T const>
+	{
+		using type = T;
+	};
+
+	template <typename T>
+	struct remove_cv<T volatile>
+	{
+		using type = T;
+	};
+
+	template <typename T>
+	struct remove_cv<T const volatile>
+	{
+		using type = T;
+	};
+
+	template <typename T>
+	using remove_cv_t = remove_cv<T>::type;
+
+	// Decay
+	// TODO should be specialized for array and function pointer types
+	template <typename T>
+	using decay_t = remove_reference_t<remove_cv_t<T>>;
 }

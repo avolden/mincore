@@ -84,6 +84,9 @@ namespace mc
 			requires copy_constructible<T> && copy_assignable<T>;
 		// TODO Insert first last
 
+		void swap(uint32_t idx1, uint32_t idx2)
+			requires move_constructible<T> && move_assignable<T>;
+
 		uint32_t erase(uint32_t idx, uint32_t count = 1)
 			requires move_assignable<T>;
 		void swap_pop_back(uint32_t idx)
@@ -740,6 +743,15 @@ namespace mc
 
 		size_ += ilist.size();
 		return idx;
+	}
+
+	template <vector_type T>
+	void vector<T>::swap(uint32_t idx1, uint32_t idx2)
+		requires move_constructible<T> && move_assignable<T>
+	{
+		T tmp {static_cast<T&&>(arr_[idx1])};
+		arr_[idx1] = static_cast<T&&>(arr_[idx2]);
+		arr_[idx2] = static_cast<T&&>(tmp);
 	}
 
 	template <vector_type T>

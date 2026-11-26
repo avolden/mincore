@@ -117,8 +117,11 @@ namespace mc
 	template <typename R, typename... Args>
 	function<R(Args...)>& function<R(Args...)>::operator=(function&& other)
 	{
-		vtable_->destruct(other.storage_);
-		vtable_ = nullptr;
+		if (valid())
+		{
+			vtable_->destruct(other.storage_);
+			vtable_ = nullptr;
+		}
 
 		if (other.valid())
 		{
@@ -128,6 +131,8 @@ namespace mc
 			other.vtable_->destruct(other.storage_);
 			other.vtable_ = nullptr;
 		}
+
+		return *this;
 	}
 
 	template <typename R, typename... Args>

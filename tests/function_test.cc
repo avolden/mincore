@@ -44,6 +44,23 @@ GROUP(function)
 		CHECK_EQ(f7.valid(), true);
 	}
 
+	TEST(assignment)
+	{
+		mc::function<int(int, int)> f0;
+		CHECK_EQ(f0.valid(), false);
+		mc::function<int(int, int)> f1(add);
+		CHECK_EQ(f1.valid(), true);
+		f1 = static_cast<mc::function<int(int, int)>&&>(f0);
+		CHECK_EQ(f1.valid(), false);
+
+		mc::function<int(int, int)> f2(add);
+		CHECK_EQ(f2.valid(), true);
+		mc::function<int(int, int)> f3;
+		CHECK_EQ(f3.valid(), false);
+		f3 = static_cast<mc::function<int(int, int)>&&>(f2);
+		CHECK_EQ(f3.valid(), true);
+	}
+
 	TEST(invoke)
 	{
 		int  c = 3;
